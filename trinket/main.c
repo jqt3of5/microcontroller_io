@@ -23,6 +23,9 @@ int main()
 	
 	i2c_master_init();
 	
+	//allow some setup time
+	_delay_ms(40);
+	
 	if (!writeByte(0x0, 0x1, 0x1, 0x25))
 	{
 		while(1) blinkCount(1);

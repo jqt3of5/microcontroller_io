@@ -36,6 +36,11 @@ int readSequential(char chipSelect, char addrH, char addrL, char bytes[], int co
 	{
 		return 0;
 	}
+	i2c_master_writeByte(addrH);
+	i2c_master_readNAck();
+	i2c_master_writeByte(addrL);
+	i2c_master_readNAck();
+	
 	i2c_master_start();
 	
 	i2c_master_writeByte(AA_CONTROL | chipSelect | AA_READ); //Read
@@ -88,7 +93,7 @@ int readCurrent(char chipSelect, char * byte)
 
 int writePage(char chipSelect, char addrH, char addrL, char bytes[], int count)
 {
-	//Poll the device until it has finished it's write cycle
+	//Poll the device until it has finished its write cycle
 	//if time out, fail
 	if(count > 64 || !ackPoll(chipSelect))
 	{

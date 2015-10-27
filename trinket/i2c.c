@@ -4,7 +4,8 @@
 #define SDA (1<<PB0)
 #define SCL (1<<PB2)
 
-#define I2C_DELAY 5
+#define I2C_DELAY 6
+
 void i2c_master_init()
 {
 	DDRB |= SDA | SCL; //SDA/SCL output	
@@ -39,14 +40,14 @@ char transfer(char byte, int count, char isInput)
 			| (1<<USITC); //Toggle clock
 			
 	do {
-		_delay_ms(I2C_DELAY);
+		_delay_us(I2C_DELAY);
 		USICR = byte; //Toggle clock high
 		while (!(PORTB & SCL));
-		_delay_ms(I2C_DELAY);
+		_delay_us(I2C_DELAY);
 		USICR = byte; // Toggle clock low
 	} while (!(USISR & (1<< USIOIF)));
 	
-	_delay_ms(I2C_DELAY);
+	_delay_us(I2C_DELAY);
 	byte = USIDR;
 	USIDR = 0xFF;
 	DDRB |= SDA;
@@ -77,12 +78,12 @@ char i2c_master_readNAck()
 
 void i2c_master_start()
 {
-	PORTB |= SCL; //release clock
+	PORTB |= SCL; //release clock, so we can do repeated starts
 	while (!(PORTB & SCL)); // SCL has to become high
-	_delay_ms(I2C_DELAY);
+	_delay_us(I2C_DELAY);
 	
 	PORTB &= ~SDA;
-	_delay_ms(I2C_DELAY);
+	_delay_us(I2C_DELAY);
 	
 	PORTB &= ~SCL;
 	PORTB |= SDA; //Release data
@@ -93,9 +94,9 @@ void i2c_master_stop()
 	PORTB &= ~SDA;
 	PORTB |= SCL;
 	while (!(PORTB | SCL));
-	_delay_ms(I2C_DELAY);
+	_delay_us(I2C_DELAY);
 	
 	PORTB |= SDA;
-	_delay_ms(I2C_DELAY);
+	_delay_us(I2C_DELAY);
 }
 
